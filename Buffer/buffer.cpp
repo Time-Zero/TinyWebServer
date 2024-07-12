@@ -44,7 +44,7 @@ void Buffer::MakeSpace_(std::size_t len){
         buffer_.resize(write_pos_ + len + 1);
     }else{
         size_t readable_bytes = ReadableBytes();
-        std::copy(BeginPtr_() + read_pos_, BeginPtr_() + write_pos_ , BeginPtr_());
+        std::copy(BeginPtr_() + read_pos_, BeginPtr_() + write_pos_ , BeginPtr_());     // 将内容平移
         read_pos_ = 0;
         write_pos_ = readable_bytes;
     }
@@ -123,15 +123,15 @@ void Buffer::Append(const Buffer& buffer){
 
 // 从文件描述符中读取字符到buffer中
 ssize_t Buffer::ReadFd(int fd, int *err){
-    int buffer_size = 65535;
-    char *buffer = new char[buffer_size];
+    char buffer[65535];
     struct iovec iov[2];
     size_t writable_bytes = WritableBytes();
 
-    iov[0].iov_base = BeginWrite();
+    // 聚集写，描述两片写空间，如果
+    iov[0].iov_base = BeginWrite();     
     iov[0].iov_len = writable_bytes;
     iov[1].iov_base = buffer;
-    iov[1].iov_len = buffer_size;
+    iov[1].iov_len = sizeof(buffer);
 
     ssize_t len = readv(fd, iov, 2);
     if(len < 0){
@@ -143,7 +143,6 @@ ssize_t Buffer::ReadFd(int fd, int *err){
         Append(buffer, (size_t)(len - writable_bytes));
     }
 
-    delete [] buffer;
     return len;
 }
 
