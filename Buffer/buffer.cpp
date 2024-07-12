@@ -60,7 +60,7 @@ void Buffer::EnsureWritable(size_t const len){
     if(len > WritableBytes())
         MakeSpace_(len);
     
-    assert(len < WritableBytes());
+    assert(len < WritableBytes());      // 腾出的空间肯定比要写的空间大
 }
 
 // 写指针移动指定位置
@@ -123,14 +123,15 @@ void Buffer::Append(const Buffer& buffer){
 
 // 从文件描述符中读取字符到buffer中
 ssize_t Buffer::ReadFd(int fd, int *err){
-    char buffer[65535];
+    int buffer_size = 65535;
+    char *buffer = new char[buffer_size];
     struct iovec iov[2];
     size_t writable_bytes = WritableBytes();
 
     iov[0].iov_base = BeginWrite();
     iov[0].iov_len = writable_bytes;
     iov[1].iov_base = buffer;
-    iov[1].iov_len = sizeof(buffer);
+    iov[1].iov_len = buffer_size;
 
     ssize_t len = readv(fd, iov, 2);
     if(len < 0){
@@ -142,6 +143,7 @@ ssize_t Buffer::ReadFd(int fd, int *err){
         Append(buffer, (size_t)(len - writable_bytes));
     }
 
+    delete [] buffer;
     return len;
 }
 
