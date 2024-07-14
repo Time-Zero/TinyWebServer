@@ -72,7 +72,9 @@ int main(){
 
     #if _LOG_TEST
         Log::instance().init(0,"./testlog", ".log",0);
-        LOG_BASE(0,"%s","Hello world");
+        for(int i = 0; i < 1000; i++){
+            LOG_BASE(i % 4, "%s============%d", "hello", i);
+        }
     #endif
 
     return 0;

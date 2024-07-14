@@ -139,7 +139,7 @@ void Log::write(int level, const char* format, ...){
         << std::setw(2) << std::setfill('0') << (t.tm_mon + 1) << "_"
         << std::setw(2) << std::setfill('0') << t.tm_mday ;
         std::string str_tail = ss.str();
-        ss.clear();
+        ss.str("");
 
         std::string new_file_name;
         if(to_day_ != t.tm_mday){
