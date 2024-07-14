@@ -3,15 +3,16 @@
 #include <cassert>
 #include <cerrno>
 #include <cstddef>
+#include <strings.h>
 #include <sys/types.h>
 #include <sys/uio.h>
 
 Buffer::Buffer(unsigned int buffer_size) : 
-buffer_(buffer_size) ,
+buffer_(buffer_size),
 read_pos_(0),
 write_pos_(0)
 {
-
+    int m = buffer_.size();
 }
 
 // 剩余可以写的大小
@@ -81,7 +82,7 @@ void Buffer::RetrieveUntil(const char* end){
 
 // 回收全部空间
 void Buffer::RetrieveAll(){
-    buffer_.clear();
+    bzero(&buffer_[0], buffer_.size());
     read_pos_ = write_pos_ = 0;
 }
 
@@ -110,7 +111,7 @@ void Buffer::Append(const char* str, size_t len){
 }
 
 void Buffer::Append(const std::string& str){
-    Append(str.c_str(), str.size());
+    Append(str.c_str(), str.length());
 }
 
 void Buffer::Append(const void* data, size_t len){

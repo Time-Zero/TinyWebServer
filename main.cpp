@@ -52,24 +52,27 @@ int main(){
         std::thread([&](){
             std::this_thread::sleep_for(std::chrono::microseconds(200));
             block_queue.push_back(i);
-            std::cout << "The element insert is " << i << std::endl;
+            // std::cout << "The element insert is " << i << std::endl;
         }).detach();
     }
 
+    if(block_queue.empty()){
+        std::cout << "blockqueue is empty" << std::endl;
+    }
 
     for(int i = 0; i < 100; i++){
         std::thread([&](){
             std::this_thread::sleep_for(std::chrono::microseconds(100));
             int j = 0;
             block_queue.pop_front(j);
-            std::cout << "The element value is " << j << std::endl;
+            // std::cout << "The element value is " << j << std::endl;
         }).detach();
     }
     #endif
 
     #if _LOG_TEST
         Log::instance().init(0,"./testlog", ".log",0);
-        LOG_BASE(0,"hello");
+        LOG_BASE(0,"%s","Hello world");
     #endif
 
     return 0;

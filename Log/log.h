@@ -12,6 +12,7 @@
 #include "../Buffer/buffer.h"
 #include <sys/stat.h>
 #include <sys/time.h>
+#include <iostream>
 
 constexpr int LOG_PATH_LEN = 256;
 constexpr int LOG_NAME_LEN = 256;
@@ -29,6 +30,7 @@ struct OutFileDeleter{
         ptr = nullptr;
     }
 };
+
 
 class Log : public NoCopy{
 public:

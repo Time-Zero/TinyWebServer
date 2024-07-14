@@ -23,7 +23,7 @@ Log& Log::instance(){
 
 Log::Log() : 
     out_file_(nullptr, OutFileDeleter()),
-    deque_(nullptr),
+    deque_(nullptr),            // 当设置为异步写，才构建阻塞队列
     write_thread_(nullptr),
     line_count_(0),
     to_day_(0),
@@ -38,11 +38,11 @@ Log::Log() :
 }
 
 Log::~Log(){
-    while(!deque_->empty()){
+    while(deque_.get() != nullptr && !deque_->empty()){
         deque_->flush();
     }
 
-    if(write_thread_->joinable()){
+    if(write_thread_.get() != nullptr && write_thread_->joinable()){
         write_thread_->join();
     }
 }
@@ -122,7 +122,7 @@ void Log::init(int level,
     }
 }
 
-void Log::write(int level, const char*format, ...){
+void Log::write(int level, const char* format, ...){
     struct timeval now = {0,0};
     gettimeofday(&now, nullptr);
     time_t t_sec = now.tv_sec;
@@ -173,15 +173,14 @@ void Log::write(int level, const char*format, ...){
         std::string str_time = ss.str();
         ss.clear();
         buffer_.Append(str_time);
-        buffer_.HasWritten(str_time.length());
         append_log_level_title(level);
 
         va_start(va_List,format);
         int m = vsnprintf(buffer_.BeginWrite(), buffer_.WritableBytes(), format, va_List);
         va_end(va_List);
-
         buffer_.HasWritten(m);
-        buffer_.Append("/n/0",2);
+
+        buffer_.Append("\n",1);
 
         if(is_async_.load() && !deque_->full()){
             deque_->push_back(buffer_.RetrieveAllToStr());
