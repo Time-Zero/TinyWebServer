@@ -90,7 +90,7 @@ void Log::init(int level,
         is_async_.store(false);             // 同步日志
     }
 
-    line_count_.store(0);
+    // line_count_.store(0);
     time_t timer = time(nullptr);
     struct tm* sys_time = localtime(&timer);
     to_day_ = sys_time->tm_mday;

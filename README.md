@@ -2,7 +2,7 @@
 
 # 简介
 
-一个基于C++实现的建议WebServer
+一个基于C++实现的简单WebServer
 
 
 # 测试

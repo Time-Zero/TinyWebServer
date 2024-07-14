@@ -1,10 +1,11 @@
 #include "Buffer/buffer.h"
 #include "Log/blockqueue.h"
 #include "Log/log.h"
+#include "Pool/threadpool.h"
 #include <chrono>
-#include <cstdio>
 #include <iostream>
 #include <thread>
+#include <cstdio>
 #include <unistd.h>
 
 int main(){
@@ -75,6 +76,17 @@ int main(){
         for(int i = 0; i < 1000; i++){
             LOG_BASE(i % 4, "%s============%d", "hello", i);
         }
+    #endif
+
+    #if _THREADPOOL_TEST
+    Log::instance().init(0,"./testlog", ".log",0);
+    for(int i = 0 ; i < 4; i++){
+        ThreadPool::Instance().commit([](){
+            for(int i = 0; i < 10000; i++){
+                LOG_BASE(i % 4, "%s============%d", "hello", i);
+            }
+        });
+    }
     #endif
 
     return 0;
