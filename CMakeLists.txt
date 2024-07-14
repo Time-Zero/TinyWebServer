@@ -7,6 +7,8 @@ set(CMAKE_C_STANDARD_REQUIRED TRUE)
 
 project(TinyWebServer VERSION 1.0)
 
+set(CMAKE_BUILD_TYPE "Debug")
+
 # 测试buffer模块
 set(BUFFER_TEST "false")
 add_definitions(-D _BUFFER_TEST=\"${BUFFER_TEST}\")
@@ -16,11 +18,13 @@ set(BLOCKQUEUE_TEST "false")
 add_definitions(-D _BLOCKQUEUE_TEST=\"${BLOCKQUEUE_TEST}\")
 
 # 测试Log模块
-set(LOG_TEST "false")
+set(LOG_TEST "true")
 add_definitions(-D _LOG_TEST=\"${LOG_TEST}\")
 
-set(THREADPOOL_TEST "true")
+set(THREADPOOL_TEST "false")
 add_definitions(-D _THREADPOOL_TEST=\"${THREADPOOL_TEST}\")
+
+include_directories(/usr/include/mysql++ /usr/include/mysql)
 
 include_directories(${PROJECT_SOURCE_DIR}/common)
 
@@ -38,3 +42,4 @@ add_executable(${PROJECT_NAME}
                 ${POOL_SRC})
 
 target_link_libraries(${PROJECT_NAME} pthread)
+target_link_libraries(${PROJECT_NAME} mysqlclient)

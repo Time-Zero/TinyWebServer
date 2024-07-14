@@ -74,7 +74,8 @@ int main(){
     #if _LOG_TEST
         Log::instance().init(0,"./testlog", ".log",0);
         for(int i = 0; i < 1000; i++){
-            LOG_BASE(i % 4, "%s============%d", "hello", i);
+            // LOG_BASE(i % 4, "%s============%d", "hello", i);
+            LOG_ERROR("Hello world");
         }
     #endif
 
@@ -87,6 +88,7 @@ int main(){
             }
         });
     }
+
     #endif
 
     return 0;
