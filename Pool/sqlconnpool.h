@@ -3,6 +3,7 @@
 #include "mysql.h"
 #include "nocopy.h"
 #include <atomic>
+#include <cassert>
 #include <mutex>
 #include <queue>
 #include <condition_variable>
@@ -35,5 +36,22 @@ private:
     std::condition_variable cv_con_;
 };
 
+
+// class SqlConnGuard{
+// public:
+//     SqlConnGuard(MYSQL** sql){
+//         *sql = SqlConnPool::Instance().GetConn();
+//         sql_ = *sql;
+//     }
+
+//     ~SqlConnGuard(){
+//         if(sql_){
+//             SqlConnPool::Instance().FreeConn(sql_);
+//         }
+//     }
+
+// private:
+//     MYSQL* sql_;
+// };
 
 #endif

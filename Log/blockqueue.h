@@ -113,6 +113,7 @@ void BlockQueue<T>::push_front(const T& elem){
 template <typename T>
 bool BlockQueue<T>::pop_front(T& elem){
     std::unique_lock<std::mutex> lck(mtx_);
+    
     cv_pro_.wait(lck,[this](){
         return is_close_.load() || !deq_.empty();           // 如果停止或者队列不为空
     });

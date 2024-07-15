@@ -62,6 +62,7 @@ void Log::async_write(){
     while(deque_->pop_front(str)){
         lck.lock();
         (*out_file_) << str;
+        (*out_file_).flush();
         lck.unlock();
     }
 }

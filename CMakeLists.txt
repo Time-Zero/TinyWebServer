@@ -18,10 +18,10 @@ set(BLOCKQUEUE_TEST "false")
 add_definitions(-D _BLOCKQUEUE_TEST=\"${BLOCKQUEUE_TEST}\")
 
 # 测试Log模块
-set(LOG_TEST "true")
+set(LOG_TEST "false")
 add_definitions(-D _LOG_TEST=\"${LOG_TEST}\")
 
-set(THREADPOOL_TEST "false")
+set(THREADPOOL_TEST "true")
 add_definitions(-D _THREADPOOL_TEST=\"${THREADPOOL_TEST}\")
 
 include_directories(/usr/include/mysql++ /usr/include/mysql)
