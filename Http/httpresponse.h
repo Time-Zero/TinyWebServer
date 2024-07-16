@@ -14,13 +14,13 @@ public:
     ~HttpResponse();
 
     void Init(const std::string& src_dir, const std::string& path, bool is_keep_alive = false, int code = -1);
+    void UnmapFile();
     void MakeResponse(Buffer& buff);
     int GetCode() const;
     size_t GetFileLen() const;
     char* GetFile();
 
 private:
-    void UnmapFile();
     void ErrorHtml();
     void AddStateLine(Buffer& buff);
     void AddHeader(Buffer& buff);

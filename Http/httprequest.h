@@ -17,6 +17,8 @@ public:
     HttpRequest();
     ~HttpRequest();
 
+    void Init();
+
     bool Parse(Buffer& buff);
     bool IsKeepAlive() const;
 

@@ -35,6 +35,13 @@ HttpRequest::HttpRequest() :
 
 }
 
+void HttpRequest::Init(){
+    method_ = path_ = version_ = body_ = "";
+    state_ = REQUEST_LINE;
+    header_.clear();
+    post_.clear();
+}
+
 bool HttpRequest::Parse(Buffer& buff){
     const char CRLF[] = "\r\n";         // 行结束标志
     if(buff.ReadableBytes() <= 0){
