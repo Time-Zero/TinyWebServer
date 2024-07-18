@@ -15,7 +15,7 @@ public:
     };
 
     HttpRequest();
-    ~HttpRequest();
+    ~HttpRequest() = default;
 
     void Init();
 

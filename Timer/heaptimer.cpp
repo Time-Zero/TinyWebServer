@@ -124,6 +124,7 @@ void HeapTimer::DoWork(int id){
     Del(i);
 }
 
+// 处理超时事件
 void HeapTimer::Tick(){
     if(heap_.empty())
         return;
@@ -146,7 +147,7 @@ void HeapTimer::Pop(){
     Del(0);
 }
 
-// 获取下一个超时事件会发生在多少ms之后
+// 获取下一个超时事件会发生在多少ms之后，同时处理掉超时的事件
 int HeapTimer::GetNextTick(){
     Tick();
 

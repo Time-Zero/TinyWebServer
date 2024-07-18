@@ -32,6 +32,7 @@ aux_source_directory(${PROJECT_SOURCE_DIR}/Log LOG_SRC)
 aux_source_directory(${PROJECT_SOURCE_DIR}/Pool POOL_SRC)
 aux_source_directory(${PROJECT_SOURCE_DIR}/Http HTTP_SRC)
 aux_source_directory(${PROJECT_SOURCE_DIR}/Timer TIMER_SRC)
+aux_source_directory(${PROJECT_SOURCE_DIR}/Epoller EPOLLER_SRC)
 aux_source_directory(${PROJECT_SOURCE_DIR}/Combine COMBINE_SRC)
 
 # 二进制文件保存位置
@@ -44,6 +45,7 @@ add_executable(${PROJECT_NAME}
                 ${POOL_SRC}
                 ${HTTP_SRC}
                 ${TIMER_SRC}
+                ${EPOLLER_SRC}
                 ${COMBINE_SRC})
 
 target_link_libraries(${PROJECT_NAME} pthread)

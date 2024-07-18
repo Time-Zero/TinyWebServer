@@ -48,7 +48,7 @@ private:
     int listen_fd_;
     char* src_dir_;
 
-    uint32_t listen_event_;
+    uint32_t listen_event_;     // 连接监听端口
     uint32_t conn_event_;
 
     std::unique_ptr<HeapTimer> timer_;

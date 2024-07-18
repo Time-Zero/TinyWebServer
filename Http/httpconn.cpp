@@ -22,6 +22,7 @@ HttpConn::HttpConn() :
 
 }
 
+
 HttpConn::~HttpConn(){
     Close();
 }
@@ -45,6 +46,7 @@ void HttpConn::Init(int fd, const sockaddr_in& addr){
     LOG_INFO("Client[%d](%s:%d) in, userCount:%d", fd_, GetIp(), GetPort(), user_count_.load());
 }
 
+// 关闭http处理
 void HttpConn::Close(){
     response_.UnmapFile();
     if(is_close_ == false){
@@ -104,7 +106,7 @@ ssize_t HttpConn::read(int* save_errno){
         len = read_buff_.ReadFd(fd_,save_errno);
         if(len <= 0)
             break;
-    }while(is_Et_);         // is_Et:边沿触发，要一次性全部读取
+    }while(is_Et_);         // is_Et:边沿触发，要一次性全部读取,因为ET触发同一事件只会触发一次，所以要在本次中读取完所有的报文
 
     return len;
 }
