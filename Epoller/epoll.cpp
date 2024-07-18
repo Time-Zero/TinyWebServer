@@ -5,18 +5,18 @@
 #include <sys/epoll.h>
 #include <unistd.h>
 
-Epoll::Epoll(int max_event) :
+Epoller::Epoller(int max_event) :
     epoll_fd_(epoll_create(512)),
     events_(max_event)
 {
     assert(epoll_fd_ >= 0 && events_.size() > 0);
 }
 
-Epoll::~Epoll(){
+Epoller::~Epoller(){
     close(epoll_fd_);
 }
 
-bool Epoll::AddFd(int fd, uint32_t events){
+bool Epoller::AddFd(int fd, uint32_t events){
     if(fd < 0) return false;
     epoll_event ev = {0};
     ev.data.fd = fd;
@@ -29,7 +29,7 @@ bool Epoll::AddFd(int fd, uint32_t events){
     }
 }
 
-bool Epoll::ModFd(int fd, uint32_t events){
+bool Epoller::ModFd(int fd, uint32_t events){
     if(fd < 0)  return false;
     epoll_event ev = {0};
     ev.data.fd = fd;
@@ -42,22 +42,22 @@ bool Epoll::ModFd(int fd, uint32_t events){
     }
 }
 
-bool Epoll::DelFd(int fd, uint32_t events){
+bool Epoller::DelFd(int fd){
     if(fd < 0) return false;
 
     return 0 == epoll_ctl(epoll_fd_, EPOLL_CTL_DEL, fd, 0);
 }
 
-int Epoll::Wait(int time_out_ms){
+int Epoller::Wait(int time_out_ms){
     return epoll_wait(epoll_fd_, &events_[0], (int)events_.size(), time_out_ms);
 }
 
-int Epoll::GetEventFd(size_t i) const {
+int Epoller::GetEventFd(size_t i) const {
     assert(i >= 0 && events_.size() > i);
     return events_[i].data.fd;
 }
 
-uint32_t Epoll::GetEvents(size_t i) const {
+uint32_t Epoller::GetEvents(size_t i) const {
     assert(i >= 0 && events_.size() > i);
     return events_[i].events;
 }

@@ -138,3 +138,19 @@ ssize_t HttpConn::write(int* save_errno){
 
     return len;
 }
+
+void HttpConn::SetSrcDir(const char* src_dir){
+    src_dir_ = src_dir;
+}
+
+void HttpConn::SetSrcDir(const std::string& src_dir){
+    SetSrcDir(src_dir.c_str());
+}
+
+void HttpConn::SetUserCount(const int user_count){
+    user_count_ = user_count;
+}
+
+void HttpConn::SetIsEt(bool is_ET){
+    is_Et_ = is_ET;
+}

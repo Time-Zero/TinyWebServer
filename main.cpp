@@ -7,6 +7,7 @@
 #include <thread>
 #include <cstdio>
 #include <unistd.h>
+#include "Combine/webserver.h"
 
 int main(){
     #if _BUFFER_TEST
@@ -90,6 +91,9 @@ int main(){
     }
 
     #endif
+
+    WebServer server{1316,3,60000, false, 3306, "root","11","webserver",12,true, 1, 1024};
+    server.Start();
 
     return 0;
 }

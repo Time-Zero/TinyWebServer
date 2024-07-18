@@ -26,6 +26,15 @@ public:
     ssize_t read(int* save_errno);
     ssize_t write(int* save_errno);
     
+    bool IsKeepAlive() const {
+        return request_.IsKeepAlive();
+    }
+    
+    static void SetSrcDir(const char* src_dir);
+    static void SetSrcDir(const std::string& src_dir);
+    static void SetUserCount(const int user_count);
+    static void SetIsEt(bool is_ET);
+    static int GetUserCount() {return user_count_;}
 
 private:
 

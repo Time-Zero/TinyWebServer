@@ -21,7 +21,7 @@ add_definitions(-D _BLOCKQUEUE_TEST=\"${BLOCKQUEUE_TEST}\")
 set(LOG_TEST "false")
 add_definitions(-D _LOG_TEST=\"${LOG_TEST}\")
 
-set(THREADPOOL_TEST "true")
+set(THREADPOOL_TEST "false")
 add_definitions(-D _THREADPOOL_TEST=\"${THREADPOOL_TEST}\")
 
 include_directories(/usr/include/mysql++ /usr/include/mysql)
@@ -32,6 +32,7 @@ aux_source_directory(${PROJECT_SOURCE_DIR}/Log LOG_SRC)
 aux_source_directory(${PROJECT_SOURCE_DIR}/Pool POOL_SRC)
 aux_source_directory(${PROJECT_SOURCE_DIR}/Http HTTP_SRC)
 aux_source_directory(${PROJECT_SOURCE_DIR}/Timer TIMER_SRC)
+aux_source_directory(${PROJECT_SOURCE_DIR}/Combine COMBINE_SRC)
 
 # 二进制文件保存位置
 set(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/bin)
@@ -42,7 +43,8 @@ add_executable(${PROJECT_NAME}
                 ${LOG_SRC}
                 ${POOL_SRC}
                 ${HTTP_SRC}
-                ${TIMER_SRC})
+                ${TIMER_SRC}
+                ${COMBINE_SRC})
 
 target_link_libraries(${PROJECT_NAME} pthread)
 target_link_libraries(${PROJECT_NAME} mysqlclient)
