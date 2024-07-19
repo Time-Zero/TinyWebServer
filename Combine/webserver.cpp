@@ -21,6 +21,24 @@ WebServer::WebServer(int port, int trig_mode, int time_out_ms, bool opt_linger,
             port_(port), opt_linger_(opt_linger), time_out_ms_(time_out_ms), is_close_(false),
             timer_(new HeapTimer), epoller_(new Epoller), src_dir_(nullptr)
 {
+
+     // 是否打开日志
+    if(open_log){
+        Log::instance().init(log_level, "./log",".log",log_que_size);
+
+        if(is_close_){
+            LOG_ERROR("========== Server init error!==========");
+        }
+        else{
+            LOG_INFO("============Server Init ===============");
+            LOG_INFO("Port: %d, OptLinger: %s", port_, opt_linger_ ? "true" : "false");
+            LOG_INFO("Listen Mode: %s, OpenConn Mode: %s", (listen_event_ & EPOLLET ? "ET" : "LT"), (conn_event_ & EPOLLET ? "ET" : "LT"));
+            LOG_INFO("Log Level is: %d", log_level);
+            LOG_INFO("SrcDir: %s", src_dir_);
+            LOG_INFO("SqlConnPool Num: %d", conn_pool_num);
+        }
+    }
+
     // 前端文件存放位置
     src_dir_ = getcwd(nullptr, 256);
     assert(src_dir_);
@@ -40,22 +58,6 @@ WebServer::WebServer(int port, int trig_mode, int time_out_ms, bool opt_linger,
     if(!InitSocket())       // 如果初始化失败，直接关闭程序
         is_close_ = true;
 
-    // 是否打开日志
-    if(open_log){
-        Log::instance().init(log_level, "./log",".log",log_que_size);
-
-        if(is_close_){
-            LOG_ERROR("========== Server init error!==========");
-        }
-        else{
-            LOG_INFO("============Server Init ===============");
-            LOG_INFO("Port: %d, OptLinger: %s", port_, opt_linger_ ? "true" : "false");
-            LOG_INFO("Listen Mode: %s, OpenConn Mode: %s", (listen_event_ & EPOLLET ? "ET" : "LT"), (conn_event_ & EPOLLET ? "ET" : "LT"));
-            LOG_INFO("Log Level is: %d", log_level);
-            LOG_INFO("SrcDir: %s", src_dir_);
-            LOG_INFO("SqlConnPool Num: %d", conn_pool_num);
-        }
-    }
 }
 
 WebServer::~WebServer(){
@@ -95,43 +97,42 @@ void WebServer::InitEventMode(int trig_mode){
 
 // 初始化socket
 bool WebServer::InitSocket(){
-    int ret;
-    struct sockaddr_in addr;
     
     if(port_ > 65535 || port_ < 1024){      // 检查端口号是不是在合理范围内
         LOG_ERROR("Port:%d error!",  port_);
         return false;
     }
-
+    
+    int ret;
+    struct sockaddr_in addr;
     addr.sin_family = AF_INET;
     addr.sin_addr.s_addr = htonl(INADDR_ANY);
     addr.sin_port = htons(port_);
-
-    // 设置套接字在关闭时的处理方法
-    {
-        struct linger optLinger = {0};          // linger用来处理在关闭socket时，内核如何处理还未发送完毕的数据
-        if(opt_linger_){
-            optLinger.l_onoff = 1;              // 关闭套机字时阻塞，并尝试发送未发送完的数据
-            optLinger.l_linger = 1;         // 设置这个发送行为的超时时间为1s
-        }
     
-        listen_fd_ = socket(AF_INET, SOCK_STREAM, 0);
-        if(listen_fd_ < 0){
-            LOG_ERROR("Create socket error! Port is: %d", port_);
-            return false;
-        }
+    
+    // 设置套接字在关闭时的处理方法
+    struct linger optLinger = {0};          // linger用来处理在关闭socket时，内核如何处理还未发送完毕的数据
+    if(opt_linger_){
+        optLinger.l_onoff = 1;              // 关闭套机字时阻塞，并尝试发送未发送完的数据
+        optLinger.l_linger = 1;         // 设置这个发送行为的超时时间为1s
+    }
 
-        ret = setsockopt(listen_fd_, SOL_SOCKET, SO_LINGER, &optLinger, sizeof(optLinger));
-        if(ret < 0){
-            close(listen_fd_);
-            LOG_ERROR("Init linger error! Port is: %d", port_);
-            return false;
-        }
+    listen_fd_ = socket(AF_INET, SOCK_STREAM, 0);
+    if(listen_fd_ < 0){
+        LOG_ERROR("Create socket error! Port is: %d", port_);
+        return false;
+    }
+    
+    ret = setsockopt(listen_fd_, SOL_SOCKET, SO_LINGER, &optLinger, sizeof(optLinger));
+    if(ret < 0){
+        close(listen_fd_);
+        LOG_ERROR("Init linger error! Port is: %d", port_);
+        return false;
     }
 
     // 设置端口复用
     int optval = 1;
-    ret = setsockopt(listen_fd_, SOL_SOCKET, SO_REUSEADDR, (const void*)&optval, sizeof(optval));
+    ret = setsockopt(listen_fd_, SOL_SOCKET, SO_REUSEADDR, (const void*)&optval, sizeof(int));
     if(ret < 0){
         LOG_ERROR("set socket setsockopt error !");
         close(listen_fd_);
@@ -172,7 +173,7 @@ bool WebServer::InitSocket(){
 // 设置socket为非阻塞
 int WebServer::SetFdNoBlock(int fd){
     assert(fd > 0);
-    return fcntl(listen_fd_, fcntl(fd, F_GETFD,0) | O_NONBLOCK);        // 获取当前socket文件描述符标志，并且添加非阻塞标志
+    return fcntl(fd, F_SETFL, fcntl(fd, F_GETFD, 0) | O_NONBLOCK);       // 获取当前socket文件描述符标志，并且添加非阻塞标志
 }
 
 // 发送错误，使用send方法
