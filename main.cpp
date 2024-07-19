@@ -73,11 +73,20 @@ int main(){
     #endif
 
     #if _LOG_TEST
-        Log::instance().init(0,"./testlog", ".log",0);
-        for(int i = 0; i < 1000; i++){
-            // LOG_BASE(i % 4, "%s============%d", "hello", i);
-            LOG_ERROR("Hello world");
-        }
+        Log::instance().init(0,"./testlog", ".log",1024);
+        // for(int i = 0; i < 1000; i++){
+        //     // LOG_BASE(i % 4, "%s============%d", "hello", i);
+        //     LOG_ERROR("Hello world");
+        // }
+
+        for(int i = 0 ; i < 4; i++){
+        ThreadPool::Instance().commit([](){
+            for(int i = 0; i < 10000; i++){
+                LOG_BASE(i % 4, "%s============%d", "hello", i);
+                std::cout << "Log Out" << std::this_thread::get_id() << "   " << i << std::endl;
+            }
+        });
+    }
     #endif
 
     #if _THREADPOOL_TEST

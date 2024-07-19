@@ -43,6 +43,7 @@ Log::~Log(){
     }
 
     if(write_thread_.get() != nullptr && write_thread_->joinable()){
+        deque_->Close();
         write_thread_->join();
     }
 }
@@ -164,7 +165,7 @@ void Log::write(int level, const char* format, ...){
         std::unique_lock<std::mutex> lck(mtx_);
         line_count_++;
         std::stringstream ss;
-        ss << std::setw(4) << std::setfill('0') << (t.tm_yday + 1900) << "-"
+        ss << std::setw(4) << std::setfill('0') << (t.tm_year + 1900) << "-"
         << std::setw(2) << std::setfill('0') << (t.tm_mon + 1) << "-"
         << std::setw(2) << std::setfill('0') << t.tm_mday << " "
         << std::setw(2) << std::setfill('0') << t.tm_hour << ":"

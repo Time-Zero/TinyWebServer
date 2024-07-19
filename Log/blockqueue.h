@@ -25,9 +25,9 @@ public:
     size_t capacity();
     size_t size();
     void flush();
+    void Close();
 
 private:
-    void Close();
 
 private:
     std::deque<T> deq_;                     // 底层数据结构
@@ -67,7 +67,6 @@ void BlockQueue<T>::clear(){                // 清空队列
 
 template <typename T>
 bool BlockQueue<T>::empty(){                // 队列为空？
-    std::lock_guard<std::mutex> lck(mtx_);
     return deq_.empty();
 }
 
@@ -98,7 +97,7 @@ void BlockQueue<T>::push_back(const T& elem){
 template <typename T>
 void BlockQueue<T>::push_front(const T& elem){
     std::unique_lock<std::mutex> lck(mtx_);
-    cv_con_.wait(lck,[this](){
+    cv_pro_.wait(lck,[this](){
         return is_close_.load() || deq_.size() < capacity_;         // 同上一样的逻辑
     });
 
@@ -114,7 +113,14 @@ template <typename T>
 bool BlockQueue<T>::pop_front(T& elem){
     std::unique_lock<std::mutex> lck(mtx_);
     
-    cv_pro_.wait(lck,[this](){
+    while(deq_.empty()){
+        if(is_close_.load()){
+            return false;
+        }
+
+        cv_con_.wait(lck);
+    }
+    cv_con_.wait(lck,[this](){
         return is_close_.load() || !deq_.empty();           // 如果停止或者队列不为空
     });
 
