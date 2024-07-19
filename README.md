@@ -4,6 +4,8 @@
 
 一个基于C++实现的简单WebServer，可以正常运行，只需要 `apt`安装一下 `mysql`的连接库即可
 
+在i7-12700H,40G内存环境下，C10K测试 0 failed
+
 # 测试
 
 ## Buffer
