@@ -83,15 +83,15 @@ void HeapTimer::Del(size_t index){
     size_t n = heap_.size() - 1;
     assert(i <= n);     //  要删除的元组肯定在堆的元素范围之内
 
-    if(i < n){
+    if(i < n){      // 如果不在队尾，就尝试移动
         SwapNode(i, n);         // 把要删除元素和队尾元素交换
         if(!SiftDown(i, n)){            // 先对被交换过去的队尾元素进行下浮，如果不需要下浮，就说明两个子节点都比父节点小
             SiftUp(i);          // 那么我们再试试要不要上浮
         }
-
-        ref_.erase(heap_.back().id);  
-        heap_.pop_back();
     }
+
+    ref_.erase(heap_.back().id);  
+    heap_.pop_back();
 }
 
 void HeapTimer::Add(int id, int time_out, const TimeoutCallBack& call_back_func){
