@@ -108,10 +108,8 @@ void HttpRequest::ParsePath(){
     if(path_ == "/"){
         path_ = "/index.html";
     }else{
-        for(auto &item : DEFAULT_HTML){
-            if(item == path_)
+        if(DEFAULT_HTML.count(path_) == 1){
                 path_ += ".html";
-            break;
         }
     }
 }
