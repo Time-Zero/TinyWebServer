@@ -63,7 +63,7 @@ bool HttpRequest::Parse(Buffer& buff){
             case HEADERS:
                 ParseHeader(line);
 
-                if(buff.ReadableBytes() <= 2)       // 如果处理请求体过程中发现剩余待处理内容长度小于2，则说明不是post方式
+                if(buff.ReadableBytes() <= 2)       // 如果处理请求体过程中发现剩余待处理内容长度小于2(结束符)，则说明不是post方式
                     state_ = FINISH;
                 break;
             case BODY:
@@ -191,7 +191,12 @@ void HttpRequest::ParsePost(){
             LOG_DEBUG("Tag:%d", tag);
             if(tag == 0 || tag == 1){
                 bool is_login = (tag == 1);         // 如果是登录
-                
+                if(UserVerify(post_["username"], post_["password"], is_login)) {
+                    path_ = "/welcome.html";
+                } 
+                else {
+                    path_ = "/error.html";
+                }
             }
         }
     }
