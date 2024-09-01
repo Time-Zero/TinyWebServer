@@ -69,7 +69,7 @@ WebServer::~WebServer(){
 
 void WebServer::InitEventMode(int trig_mode){
     listen_event_ = EPOLLRDHUP;         // listen_event先赋值为关闭连接
-    conn_event_ = EPOLLONESHOT | EPOLLRDHUP;        // 设置关闭连接，并且设置同一事件不要多次通知，仅仅使用单个线程处理这个事件
+    conn_event_ = EPOLLONESHOT | EPOLLRDHUP;        // 设置关闭连接，并且设置同一事件不要多次通知，仅仅使用单个线程处理这个事件，防止惊群
 
     // 设置什么事件采用ET触发（如果不设置ET触发， 默认就是LT触发）
     switch (trig_mode) {
@@ -123,6 +123,7 @@ bool WebServer::InitSocket(){
         return false;
     }
     
+    // 设置延迟关闭
     ret = setsockopt(listen_fd_, SOL_SOCKET, SO_LINGER, &optLinger, sizeof(optLinger));
     if(ret < 0){
         close(listen_fd_);
@@ -130,7 +131,7 @@ bool WebServer::InitSocket(){
         return false;
     }
 
-    // 设置端口复用
+    // 设置地址和端口复用，防止程序异常重启后，socket无法再绑定同一个端口
     int optval = 1;
     ret = setsockopt(listen_fd_, SOL_SOCKET, SO_REUSEADDR, (const void*)&optval, sizeof(int));
     if(ret < 0){
